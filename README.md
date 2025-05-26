@@ -189,3 +189,154 @@ The useMemo() and useCallback() hooks are similar. The main difference is:
           )
         }
 In the above code, the function cubeNum() is executing on every re-render the component. To overcome with this, we use useMemo. 
+
+
+        function App() {
+          const [number, setNumber] = useState(0)
+          const [counter, setCounter] = useState(0)
+          
+          function cubeNum(num){
+            console.log('calculation done!')
+            return Math.pow(num,3)
+          }
+          
+          const result = useMemo(()=>cubeNum(number), [number])
+        
+          return (
+            <div >
+             <input type="number" value={number} onChange={(e)=>setNumber(e.target.value)} />
+             <h1>Cube of Number is: {result}</h1>
+             <button onClick ={()=>{setCounter(counter+1)}}>Counter++</button>
+             <h1>Counter:{counter}</h1>
+            </div>
+          )
+        }
+cubeNum() function will executes only when the number gets changed. It will not executes on every re-render. The counter is re-rendering the component but not executing the function. by this type we can prevent function re-rendering and we can enhance the performance of application
+
+## 5. useCallback()
+
+useCallback() is a react hook that lets you cache a function defination between re-renders.
+
+It means, when we use the useCallback hook, it doesn't create multiple instance of same function when re-render happens.
+
+Instead of creating new instance of the function, it provides the cached function on re-render of the function.
+
+
+**Create new Header compnent **
+
+    const Header = ()=>{
+      console.log("Header is rendered!")
+      return (
+        <>
+          <h1>Header Component</h1>
+        </>
+        )
+    }
+    export default Header;
+
+    //App.jsx file
+    
+    function App() {
+      const [count, setCount] = useState(0)
+    
+      return (
+        <div >
+          <Header/>
+          <h1 >Rendered {count} times!</h1>
+          <button onClick ={()=>setCount(prev=>prev+1)}>
+            Click Here</button>
+        </div>
+      )
+    }
+Whenever we click on  button, the Header component is also re-rendering. To overcome this,we use memo method in Header Component. (In export default Header line, we have to change it to --> **export default React.memo(Header)**).
+
+Now, If we pass a function from App compooent as a child to Header componet, then again it will starts re-rendering on every click.
+
+    function App() {
+      const [count, setCount] = useState(0)
+      const newFn = ()=>{}
+      
+      return (
+        <div >
+          <Header newFn = {newFn}/>
+          <h1 >Rendered {count} times!</h1>
+          <button onClick ={()=>setCount(prev=>prev+1)}>
+            Click Here</button>
+        </div>
+      )
+    }
+This is bacause of **"Referential Equality".** When we re-render, a new instance will be created for newFn() (It will be created in new memory location.) and Hence We are passing new function to Header component (Props is changing) and It is re-rendering the component. 
+
+**This issue is solved by using useCallback() Hook.**
+
+pass the function with help of useCallback()
+
+    const newFn = useCallback(()=>{},[])
+
+If we pass dependency, and parameter as count, the function gets executed on every count change, and new function is passed to header. then header will re-render on every count change.
+
+    function App() {
+      const [count, setCount] = useState(0)
+      const newFn = useCallback((count)=>{},[count])
+      
+      return (
+        <div >
+          <Header newFn = {newFn}/>
+          <h1 >Rendered {count} times!</h1>
+          <button onClick ={()=>setCount(prev=>prev+1)}>
+            Click Here</button>
+        </div>
+      )
+    }
+
+    //Header Component
+    const Header = ()=>{
+      console.log("Header is rendered!")
+      return (
+        <>
+          <h1>Header Component</h1>
+        </>
+        )
+    }
+    export default React.memo(Header);
+
+If we remove dependency, It will not reacte new function, and uses cached fucntion and prevents re-rendering.
+
+## 6.useContext()
+
+useConext() is a react hook that allows you access data from any component without explicitly passing it down through props at every level.
+
+useContext() is used to manage Global data in the React App.
+
+- Creating Context
+- Providing the Context
+- Consuming the Conext
+
+**Creating the context** 
+
+    import {useContext} from 'react'
+    
+      export const AppContext = useContext();
+      
+      const contextProvider = (props)=>{
+        
+        const contact_num = +91 8974562310
+        
+        return(
+          <AppContext.Provider value = {contact_num}>
+            {props.children}
+          </AppContext.Provider>
+          )
+      }
+      export default contextProvider
+
+Now wrap the App component with context provider in **main.jsx** file
+
+    import ContextProvider from './context/AppContext.jsx'
+    <ContextProvider>
+        <App/>
+    </ContextProvider>
+
+Now, all the data which is present in AppContext will be accessed by any of the Component easily.  
+
+Consuming the Context:
