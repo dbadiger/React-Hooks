@@ -86,9 +86,75 @@ Some of the examples of side effects are:
 - Directly updating the DOM
 - Timers like SetTimeOut and SetInterval()
 
+      useEffect (callback)
+      useEffect (()=>{}, [])
+      useEffect(()=>{},[dependency1, dependency2, dependency3...])
+  
+- If there is no dependency in useEffect, every chages happens in the state, the useEffect callback function will execute.
+- If there is an empty array in dependency array, then callback function will executes only once when component gets loaded.
+- If we add any varibale in dependency array, then, callback function will executes when component gets loaded, and whenever the varibale's value changes.
+
+      const [count, setCount] = useState(0)
+      useEffect(()=>{
+        setTimeout(()=>{
+          setCount(count=>count+1)
+        }, 2000);
+      })
+      return (
+        <div >
+          <h1>I have rendered {count} times!</h1>
+        </div>
+      )
+In this code, there are no dependenices, so on every state (any state) change, it will re-render the code. Every 2 seconds state is changing. so it will calling again setTimeOut function, so it will goes till infinite.
+
+- If we add an empty [] array in dependency, the function executes only once when the component gets loaded. (It increase the counter by once and stops the execution).
+- If we add 'count' variable in dependency array [count] , function will executes whenever the value of count is changes. 
+
+
 ## 3. useRef()
 
 useRef() is a react Hook that allow us to create mutable variables, which will not re-render the component.
+
+Means, when we create a varibale using useRef, whenever the value changes, then component will not re-render.
+
+useRef is also used for accessing/modifying DOM elements.
+
+     const [value,setValue] = useState(0)
+     const count = useRef(0)
+      
+      useEffect(()=>{
+        count.current = count.current+1
+      })
+    
+      return (
+        <div >
+          <button onClick ={()=>{setValue(prev=>prev-1)}}>-1</button>
+          <h1>{value}</h1>
+          <button onClick ={()=>{setValue(prev=>prev+1)}}>+1</button>
+          <h1>Render is:{count.current}</h1>
+        </div>
+      )
+
+We use useRef if we don't want to re-render the component, whenever the state is gets changed.
+
+##### Accessing DOM Elements using useRef()
+
+    function App() {
+      const inputElemnet = useRef()
+      
+    const btnClick=()=>{
+      // console.log(inputElemnet)
+      // console.log(inputElemnet.current)
+      inputElemnet.current.style.background= 'blue'
+    }
+    
+      return (
+        <div >
+         <input type="text" ref={inputElemnet}></input>
+         <button onClick = {btnClick}> Click</button>
+        </div>
+      )
+    }
 
 ## 4. useMemo()
 
@@ -100,4 +166,26 @@ There is one more hook in react to improve performance, that is useCallback() ho
 
 The useMemo() and useCallback() hooks are similar. The main difference is:
   - useMemo() returns a memoized value value.
-  - useCallack() returns a memoized function. 
+  - useCallack() returns a memoized function.
+
+        function App() {
+          const [number, setNumber] = useState(0)
+          const [counter, setCounter] = useState(0)
+          
+          function cubeNum(num){
+            console.log('calculation done!')
+            return Math.pow(num,3)
+          }
+          
+          const result = cubeNum(number)
+        
+          return (
+            <div >
+             <input type="number" value={number} onChange={(e)=>setNumber(e.target.value)} />
+             <h1>Cube of Number is: {result}</h1>
+             <button onClick ={()=>{setCounter(counter+1)}}>Counter++</button>
+             <h1>Counter:{counter}</h1>
+            </div>
+          )
+        }
+In the above code, the function cubeNum() is executing on every re-render the component. To overcome with this, we use useMemo. 
