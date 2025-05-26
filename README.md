@@ -505,3 +505,75 @@ that means, first useLayoutEffect hook is executed and then useEffect hook is ex
 We can use the useLayoutHook for measuring DOM elements, animating the elements, fixing the flickering issue, and also we can use this for API calling. But React Official document says that, useLayoutEffect can hurt the performance of the app, that's whay it is recommended to use useEffect hook.
 
 ## 9. Custom Hooks:
+
+Without Custom Hook:
+
+    import React from 'react';
+    import {useState, useEffect, useLayoutEffect} from 'react'
+    
+    function App() {
+      const [name, setName] = useState(
+        localStorage.getItem('username')?
+        localStorage.getItem('username'):''
+        );
+     
+     useEffect(()=>{
+       localStorage.setItem('username', name)
+     },[name])
+      
+      return (
+        <div >
+          <input
+          type="text" placeholder="Enter your name" value={name}
+          onChange={(e)=>setName(e.target.value)} />
+          <h2>Welcome, {name}</h2>
+        </div>
+      )
+    }
+    export default App
+
+Creating Custom hook in hooks folder with name: **useLocalStorage.jsx**
+
+    import {useState, useEffect} from 'react'
+    
+    const useLocalStorage(key, initialValue)=>{
+      
+      const [name, setName]=useState(
+        localStorage.getItem(key) ?
+        localStorage.getItem(key):initialValue
+      );
+      
+      useEffect(()=>{
+        localStorage.setItem(key, name)
+      },[name, key])
+      
+      return [name, setName]
+    }
+    export default useLocalStorage;
+
+Now, We will use custom hook in App Component:
+
+    import React from 'react';
+    import useLocalStorage from './hooks/useLocalStorage'
+    
+    function App() {
+     
+     const [name, setName]=useLocalStorage('username','')
+     const [id, setId]=useLocalStorage('userid', '')
+     
+      return (
+        <div >
+          <input
+          type="text" placeholder="Enter your name" value={name}
+          onChange={(e)=>setName(e.target.value)} />
+          <h2>Welcome, {name}</h2>
+          
+          <input
+          type="text" placeholder="Enter your ID" value={od}
+          onChange={(e)=>setName(e.target.value)} />
+          <h2>Your ID is: {id}</h2>
+        </div>
+      )
+    }
+    
+    export default App
