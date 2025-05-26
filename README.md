@@ -321,9 +321,15 @@ useContext() is used to manage Global data in the React App.
       const contextProvider = (props)=>{
         
         const contact_num = +91 8974562310
+        const name = "darshan"
         
         return(
-          <AppContext.Provider value = {contact_num}>
+          <AppContext.Provider value = {
+          {
+              contact_num,
+              name
+          }
+          }>
             {props.children}
           </AppContext.Provider>
           )
@@ -339,4 +345,163 @@ Now wrap the App component with context provider in **main.jsx** file
 
 Now, all the data which is present in AppContext will be accessed by any of the Component easily.  
 
-Consuming the Context:
+**Consuming the Context:**
+
+Accessing contact number from AppContext to Contact Component:
+
+    import {useContext} from 'react'
+    import {AppContext} from '../context/AppContext'
+    
+    const Contact = ()=>{
+      const contact_num = useContext(AppContext)
+      
+      return(
+        
+        <>
+          <h1>Contact Number: {contact_num}</h1>
+        </>
+        )
+    }
+    export default Contact;
+Accessing contact number from AppContext to Profile component:
+
+    import {useContext} from 'react'
+    import {AppContext} from '../context/AppContext'
+    
+    const Profile = ()=>{
+      const {contact_num, name} = useContext(AppContext)
+      
+      return(
+        
+        <>
+          <h2>Name:{name}</h2>
+          <h3>Contact Number: {contact_num}</h3>
+        </>
+        )
+    }
+    export default Profile;
+
+This type we can access any number of data, variables, functions, state variables or any data directly from AppContext using Context Hook.
+
+The context API can be used to share any type of data including objects, functions, and arrays. This makes it flexible solution for variety of state management needs.
+
+Most common use of context API is to share the current theme of your application with all its components or to share the authenticated user with all of our components in our application to to share the result of an API call with all of our components in our application that will reduce the number of API calls.
+
+## 7.useReducer()
+
+useReducer() is similar to useState, But instated of providing state and setter function, it provides state and dispatch function.
+
+The useReducer hook accepts two arguments
+- Reducer function.
+- Initial State.
+and Returns: current state and dispatch method.
+`const [state, dispatch] = useReducer(reducer, inititalState)`
+The **reducer function** specifies how the state gets updated.
+
+we can write it in different ways:
+
+    const initialState={count:0}
+    useReducer(reducer, initialState)
+
+OR
+
+`useReducer(reducer, {count:0})`
+
+Example:
+
+    import React from 'react';
+    import { useReducer } from 'react'
+    
+    function App() {
+     
+     const initialState = {count:0}
+     
+     const reducer =(state, action)=>{
+       switch (action.type) {
+         case 'increase':
+            return {count: state.count+1}
+           break;
+          case 'decrease':
+            return {count:state.count-1}
+          case 'input':
+            return {count:action.payload}
+         default:
+           return state
+       }
+     }
+     
+     const [state, dispatch] = useReducer(reducer, initialState)
+    
+      return (
+        <div >
+          <h1 > {state.count} </h1>
+          <button onClick ={()=>dispatch({type:'increase'})}>
+            Increase</button><br/>
+          <button onClick ={()=>dispatch({type:'decrease'})}>
+            Decrease</button><br/>
+            <input 
+            value={state.count} 
+            onChange={(e)=>dispatch({type:'input', payload:Number(e.target.value)})} 
+            type="number"/>
+         
+        </div>
+      )
+    }
+    
+    export default App
+
+## 8.useLayoutEffect()
+
+useLayoutEffect() works similarly to useEffect, but it is called before the user interface gets mounted.
+
+It Means,
+- useEffect gets called after printing the DOM elements.
+- useLayoutEffect gets called before printing the DOM elements.
+
+         useEffect(()=>{
+           console.log('Message from useEffect')
+         },[])
+         
+         useLayoutEffect(()=>{
+           console.log('Message from useLayoutEffect')
+         },[])
+     
+      return (
+        <div >
+          <h2>Test Message</h2>
+        </div>
+      )
+        }
+The output will be: "Message from useLayoutEffect" then "Message from useEffect".
+
+that means, first useLayoutEffect hook is executed and then useEffect hook is executed.
+
+    import React from 'react';
+    import { useEffect, useLayoutEffect} from 'react'
+    
+    function App() {
+     
+     useEffect(()=>{
+       console.log('Message from useEffect')
+     },[])
+     
+     useLayoutEffect(()=>{
+       console.log('Message from useLayoutEffect')
+     },[])
+     
+      return (
+        <div >
+          <h2>Test Message</h2>
+          {Array(1000).fill('').map((item, index)=>(
+          <li key={index}> 
+            {Math.pow(Math.random(),5)}
+          </li>
+          ))}
+        </div>
+      )
+    }
+    export default App
+
+We can use the useLayoutHook for measuring DOM elements, animating the elements, fixing the flickering issue, and also we can use this for API calling. But React Official document says that, useLayoutEffect can hurt the performance of the app, that's whay it is recommended to use useEffect hook.
+
+## 9. Custom Hooks:
