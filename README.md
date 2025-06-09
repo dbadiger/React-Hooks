@@ -1,4 +1,14 @@
 # React-Hooks
+
+Earlier, when we used to create react app using Functional component, then we didn't have access to the state management and life cycle methods. To access these features we had to add class components. So this was the problem with functional component.
+
+But after introducing React hooks from version 16.8, we can now use state managenet and other react features without writing class components.
+
+Hooks are the functions that make functional components work like class components.
+
+Hooks made react functional components so easy to use. React hooks simplify the code, improves the readability, reusability and overall performance of the application.
+
+
 ### 1. useState()
 ### 2. useEfect()
 ### 3. useRef()
